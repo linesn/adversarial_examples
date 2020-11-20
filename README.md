@@ -11,7 +11,7 @@ Before getting started, be aware that the initial git clone will take a long tim
 conda env create -f conda.yaml
 conda activate ae
 ```
-* We are including the data in this github, which is bad form. If anyone has a better idea how to share that data, let me know and we can wipe it out of the repo. 
+* I'm still not sure how we will handle data prep.
 * When you make changes to the code, use git commits to track your work.
 * Because git is weird about notebook output, unless there is a reason to preserve it, clear your cell outputs before committing a notebook.
 * When you need to install new packages for the project, wherever possible use `conda install` to get them, and then update the project's conda environment with 
