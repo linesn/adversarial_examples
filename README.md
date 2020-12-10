@@ -1,7 +1,10 @@
 # Adversarial Examples
 A project exploring the use of adversarial examples to defeat classifiers. This project was made as part of Johns Hopkins EN.625.638 Neural Networks course, by students Daniel Donoghue, Nicholas Lines, and Arnaldo Pereira, under the direction of Professor Mark Fleischer.
 
-# Project goals
+# Summary Slideshow
+Here is a [PDF slideshow](AdversarialExamples.pdf) explaining our project.
+
+# Original Proposal
 For background on adversarial machine learning, our goals for this project, and other details, refer to [our project proposal](Project_Proposal_Adversarial_Examples.pdf).
 
 # How to contribute while we make this project
