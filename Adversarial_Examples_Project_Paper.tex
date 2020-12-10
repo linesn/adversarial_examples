@@ -1,0 +1,128 @@
+
+\documentclass[conference]{IEEEtran}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsfonts}
+
+%TCIDATA{OutputFilter=LATEX.DLL}
+%TCIDATA{Version=5.50.0.2960}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{BibliographyScheme=Manual}
+%TCIDATA{Created=Wednesday, December 09, 2020 21:10:24}
+%TCIDATA{LastRevised=Wednesday, December 09, 2020 21:27:38}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{<META NAME="DocumentShell" CONTENT="Articles\SW\IEEE Transactions for Conferences">}
+%TCIDATA{CSTFile=IEEEtran.cst}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\input{tcilatex}
+\begin{document}
+
+\title{Generating and defending against adversarial examples in
+vision-optimized neural architectures}
+\pubid{\copyright ~2020 }
+\specialpapernotice{}
+\date{December 9, 2020}
+
+%TCIMACRO{%
+%\TeXButton{Author Information}{\author{\authorblockN{Daniel Donoghuel}
+%\authorblockA{
+%Email: ddonogh1@jhu.edu}
+%\and
+%\authorblockN{Nicholas Lines}
+%\authorblockA{
+%Email: nicholasalines@gmail.com}
+%\and
+%\authorblockN{Arnaldo Pereira}
+%\authorblockA{
+%Email: aepereira@gmail.com}
+%}}}%
+%BeginExpansion
+\author{\authorblockN{Daniel Donoghuel}
+\authorblockA{
+Email: ddonogh1@jhu.edu}
+\and
+\authorblockN{Nicholas Lines}
+\authorblockA{
+Email: nicholasalines@gmail.com}
+\and
+\authorblockN{Arnaldo Pereira}
+\authorblockA{
+Email: aepereira@gmail.com}
+}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{Make Title}{\maketitle}}%
+%BeginExpansion
+\maketitle%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{Begin abstract}{\begin{abstract}}}%
+%BeginExpansion
+\begin{abstract}%
+%EndExpansion
+
+As automated decision-making becomes more popular and more dependent upon
+artificial intelligence, securing sensitive models from adversarial behavior
+has become essential. Neural networks are particularly vulnerable to
+so-called adversarial examples \cite{szegedy2014intriguing}, and various
+attacks and defences have been explored in the literature.
+
+Our intention in this paper is to demonstrate and confirm the results of
+such attacks at an informative but modest scale. We apply two common attacks
+to both the wide ResNet and GoogLeNet neural models, and test two defences,
+in a reproducible computational environment. We show that significant
+improvements in network robustness are available with minimal defence
+measures. 
+
+The authors are listed alphabetically, and all made equal contributions.
+This work is performed in association with the Johns Hopkins Engineering for
+Professionals Program, as a project for EN.625.638.8VL2.FA20 Neural Networks.
+
+%TCIMACRO{\TeXButton{End abstract}{\end{abstract}}}%
+%BeginExpansion
+\end{abstract}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{Table of Contents}{\tableofcontents}}%
+%BeginExpansion
+\tableofcontents%
+%EndExpansion
+
+\bigskip 
+
+\section{Executive Summary}
+
+\section{Computational Work}
+
+\subsection{Creating Adversarial Examples}
+
+\subsection{Defences}
+
+\section{Analysis}
+
+\section{Conclusions}
+
+\bibliographystyle{amsplain}
+\bibliography{acompat,JHU}
+
+\end{document}
