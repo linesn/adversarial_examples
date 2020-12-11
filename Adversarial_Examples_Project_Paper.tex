@@ -1,14 +1,17 @@
 
 \documentclass[conference]{IEEEtran}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{amsfonts}
 
 %TCIDATA{OutputFilter=LATEX.DLL}
 %TCIDATA{Version=5.50.0.2960}
 %TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
-%TCIDATA{BibliographyScheme=Manual}
+%TCIDATA{BibliographyScheme=BibTeX}
 %TCIDATA{Created=Wednesday, December 09, 2020 21:10:24}
-%TCIDATA{LastRevised=Wednesday, December 09, 2020 21:34:01}
+%TCIDATA{LastRevised=Friday, December 11, 2020 17:24:56}
 %TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
 %TCIDATA{<META NAME="DocumentShell" CONTENT="Articles\SW\IEEE Transactions for Conferences">}
 %TCIDATA{CSTFile=IEEEtran.cst}
@@ -92,11 +95,14 @@ such attacks at an informative but modest scale. We apply two common attacks
 to both the wide ResNet and GoogLeNet neural models, and test two defences,
 in a reproducible computational environment. We show that significant
 improvements in network robustness are available with minimal defence
-measures. 
+measures.
 
 The authors are listed alphabetically, and all made equal contributions.
 This work is performed in association with the Johns Hopkins Engineering for
 Professionals Program, as a project for EN.625.638.8VL2.FA20 Neural Networks.
+
+All code and further reference materials are available online at
+https://github.com/linesn/adversarial\_examples.
 
 %TCIMACRO{\TeXButton{End abstract}{\end{abstract}}}%
 %BeginExpansion
@@ -108,11 +114,148 @@ Professionals Program, as a project for EN.625.638.8VL2.FA20 Neural Networks.
 \tableofcontents%
 %EndExpansion
 
-\bigskip 
+\bigskip
 
 \section{Executive Summary}
 
-\section{Computational Work}
+Since 2014 when Szegedy et al \cite{szegedy2014intriguing} published the
+first observation on the subject, adversarial examples have gained much
+attention in both the study of adversarial machine learning research and the
+more results-oriented world of practical neural archetecture, due to the
+alarming weaknesses they expose and the interesting robustness that can be
+introduced via defence efforts. The term "adversarial example" is used to
+describe "an input to a machine learning model that is intentionally
+designed to cause the model to make a mistake in its predictions, despite
+resembling a valid input to a human" \cite{wiyatno2019adversarial}. As such
+these examples are classed as evasion techniques by adversarial machine
+learning theory, since their goal is to evade detection while producing
+misinterpretations \cite{wiki:aml}. 
+
+Most of the literature on the subject (in keeping with traditions in the
+neural network community) uses image recognition tasks to demonstrate the
+efficacy of attacks and defences, and we will do the same. In this paper we
+will demonstrate successful us of the Fast Gradient Sign Method (FGSM)  \cite%
+{goodfellow2014explaining} and Directed Gradient Sign (DGSM) \cite%
+{madry2020adversarial} attacks against convolutional neural networks trained
+with Imagenette data. We will then examine the results of applying two
+common defences: first, perturbed prediciton averaging, and second, training
+using adversarial examples. We confirm the observations of Goodfellow et al 
+\cite{goodfellow2014explaining} and show that, while the Wide ResNet and
+GoogLeNet architectures are very susceptible to the above attacks, the named
+defences also produce significant improvement to the robustness of the
+classifiers.  
+
+\section{Project overview}
+
+\subsection{Why are adversarial examples effective?}
+
+In practice neural architectures based on linear components are prefered
+(over, for example, radial basis components) because of their speed in
+training and inference. However, it is this property that makes them
+particularly vulnerable to the most common form of adversarial example \cite%
+{goodfellow2014explaining}. Neural classifier inputs or features naturally
+have some precision limit, such as a color range or pixel count, below which
+perturbations are ignored. Consider an input vector $\mathbf{X}$, to which
+we add a noise vector $\mathbf{\eta }$, where every $\eta \in \mathbf{\eta }$
+is smaller than $\epsilon ,$ the precision limit. To humans and a first pass
+review by machines, $\mathbf{X}$ and $\mathbf{X+\eta }$ are identical.
+However, when the linear activity function is computed, the network's
+weights are dotted with the input, yielding approximately 
+\[
+\mathbf{W}^{\intercal }(\mathbf{X+\eta )=W}^{\intercal }\mathbf{X+W}%
+^{\intercal }\mathbf{\eta ,}
+\]%
+where the noise term $\mathbf{W}^{\intercal }\mathbf{\eta }$ can grow very
+large if $\mathbf{W}$ is ill-conditioned. This means, in practice, that
+networks reliant on linear activity functions can produce extremely
+different outputs when given only minimally altered inputs. 
+
+\subsection{Attacks}
+
+The FGSM attack \cite{goodfellow2014explaining} takes advantage of this
+weakness in a straightforward manner. The attacker forms the perturbation
+vector $\mathbf{\eta }$ to match the cost function gradient sign for a given
+input, computing 
+\[
+\mathbf{\eta }=\epsilon _{\ast }\text{sign}(\nabla _{\mathbf{X}}J(\mathbf{%
+\theta },\mathbf{X},y))
+\]%
+where $\epsilon _{\ast }$ is the allowable level of perturbation, $J$ is the
+network cost funtion, $\mathbf{\theta }$ is the vector of model parameters,
+and $y$ is the true label. Thus, if the attacker is in posession of the
+model and labeled training data, it is easy to train the network to behave
+badly using simple backpropagation. The result is that the network will lose
+certainty in the true label classification, and often misclassify the data
+at random. The attack parameter $\epsilon _{\ast }$ may be scaled, of
+course, but making $\epsilon _{\ast }$ much larger than the network
+precision level $\epsilon $ may produce examples whose alteration is visible
+to human reviewers, so smaller $\epsilon _{\ast }$ are desireable from the
+adversarial perspective.
+
+One can alter this attack to cause the network to favor a particular class
+instead \cite{madry2020adversarial}. We will call this the Directed Gradient
+Sign Method (DGSM). This time we use the loss function to direct the network
+toward a specific desired label. We iterate using gradient descent for a
+given number of iterations, and project the gradient onto the $l_{\infty }$%
+-norm $\epsilon _{\ast }$-sphere, which has the effect of insisting that a
+feature is not altered by more than $\epsilon _{\ast }$. For a given input $%
+\mathbf{X}$, the attacker must solve the minimization problem 
+\begin{eqnarray*}
+\min_{\delta }\{J_{adv}(\mathbf{X}+\mathbf{\delta }) &=&J(\mathbf{\theta },%
+\mathbf{X}+\mathbf{\delta },y_{desired}) \\
+&&-J(\mathbf{\theta },\mathbf{X}+\mathbf{\delta },y_{true})\}\text{ } \\
+\text{subject to }\left\vert \left\vert \mathbf{\delta }\right\vert
+\right\vert _{\infty } &\leq &\epsilon _{\ast }
+\end{eqnarray*}%
+where $J$ is again the loss function, $\mathbf{\theta }$ the fixed network
+parameters, $y_{desired}$ and $y_{true}$ are two different labels, and $%
+\mathbf{\delta }$ is the directed perturbation vector. This requires using
+forward passes and backpropagation within the network over $N$ iterations,
+applying the update rule%
+\begin{eqnarray*}
+\mathbf{\delta }_{t} &=&\mathbf{\delta }_{t-1}-a\text{ sign}(\nabla L_{adv}(%
+\mathbf{X}+\mathbf{\delta }_{t-1})), \\
+\mathbf{\delta }_{t} &\leftarrow &\text{clip}(\mathbf{\delta }_{t},-\epsilon
+_{\ast },\epsilon _{\ast })
+\end{eqnarray*}%
+begining with the zero vector $\mathbf{\delta }_{0}=\mathbf{0}$. The result
+of this attack is that the classifier will incorrectly favor the chosen
+label $y_{desired}$ in adversarial inputs, despite remaining perfectly
+capable of correctly classifying unaltered inputs. 
+
+\subsection{Defences}
+
+A theme that has emerged in the literature is that there is a strong
+correlation between generally robust networks and networks that are not
+easily swayed by adversarial attacks. Of course, one also expects a cost in
+effort or accuracy to be associated with increased robustness. 
+
+Our first defence we test is simply Perturbed Prediction Averaging. This
+defence has the advantage that it does not require retraining the network,
+and the only increased expense is the cost of slower decisions at inference
+time. We predict the class for each image based on an ensemble prediction
+for the original image and $N-1$ additional perturbed versions of the image,
+with the perturbations drawn uniformly from the $\epsilon _{\max }$-ball in
+the $l_{\infty }$ sense around the image, choosing $\epsilon _{\max }$ to be
+larger than any expected adversarial alteration level $\epsilon _{\ast }$.
+For example, $\epsilon _{\max }$ can be set large enough that a uniform
+random $\left\vert \left\vert \mathbf{\delta }\right\vert \right\vert
+_{\infty }\leq $ $\epsilon _{\max }$ perturbation would be easily noticed by
+a human. In that case, we can assume that adversarial attacks will rely on $%
+\epsilon _{\ast }<<\epsilon _{\max }$. Using a modified softmax function, we
+can express the probability for class $k$ of classes $\{1,2,...,K\}$
+predicted using this defense as%
+\[
+P(y_{k}\rvert \mathbf{X})=\frac{\sum_{i=1}^{N}e^{z_{k}}(\mathbf{X}+\mathbf{%
+\delta }_{i}\mathbf{)}}{\sum_{j=1}^{K}\sum_{i=1}^{N}e^{z_{j}}(\mathbf{X}+%
+\mathbf{\delta }_{i}\mathbf{)}},
+\]%
+where $z_{j}(\cdot )$ is the output of the $j$th hidden node for a given
+network input $\mathbf{X}$ and with $\mathbf{\delta }_{i}=\mathbf{0}$, and $%
+\left\vert \left\vert \mathbf{\delta }\right\vert \right\vert _{\infty }\leq
+\epsilon _{\max }$ for all $i$.
+
+\section{Computational results}
 
 \subsection{Creating Adversarial Examples}
 
