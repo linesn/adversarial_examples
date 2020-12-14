@@ -1,17 +1,19 @@
 
 \documentclass[conference]{IEEEtran}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{amssymb}
 \usepackage{amsmath}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{geometry}
+\usepackage{graphicx}
 \usepackage{amsfonts}
 
+\setcounter{MaxMatrixCols}{10}
 %TCIDATA{OutputFilter=LATEX.DLL}
 %TCIDATA{Version=5.50.0.2960}
 %TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
 %TCIDATA{BibliographyScheme=BibTeX}
 %TCIDATA{Created=Wednesday, December 09, 2020 21:10:24}
-%TCIDATA{LastRevised=Friday, December 11, 2020 17:24:56}
+%TCIDATA{LastRevised=Monday, December 14, 2020 12:05:25}
 %TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
 %TCIDATA{<META NAME="DocumentShell" CONTENT="Articles\SW\IEEE Transactions for Conferences">}
 %TCIDATA{CSTFile=IEEEtran.cst}
@@ -129,12 +131,12 @@ designed to cause the model to make a mistake in its predictions, despite
 resembling a valid input to a human" \cite{wiyatno2019adversarial}. As such
 these examples are classed as evasion techniques by adversarial machine
 learning theory, since their goal is to evade detection while producing
-misinterpretations \cite{wiki:aml}. 
+misinterpretations \cite{wiki:aml}.
 
 Most of the literature on the subject (in keeping with traditions in the
 neural network community) uses image recognition tasks to demonstrate the
 efficacy of attacks and defences, and we will do the same. In this paper we
-will demonstrate successful us of the Fast Gradient Sign Method (FGSM)  \cite%
+will demonstrate successful us of the Fast Gradient Sign Method (FGSM) \cite%
 {goodfellow2014explaining} and Directed Gradient Sign (DGSM) \cite%
 {madry2020adversarial} attacks against convolutional neural networks trained
 with Imagenette data. We will then examine the results of applying two
@@ -143,7 +145,7 @@ using adversarial examples. We confirm the observations of Goodfellow et al
 \cite{goodfellow2014explaining} and show that, while the Wide ResNet and
 GoogLeNet architectures are very susceptible to the above attacks, the named
 defences also produce significant improvement to the robustness of the
-classifiers.  
+classifiers.
 
 \section{Project overview}
 
@@ -161,14 +163,28 @@ is smaller than $\epsilon ,$ the precision limit. To humans and a first pass
 review by machines, $\mathbf{X}$ and $\mathbf{X+\eta }$ are identical.
 However, when the linear activity function is computed, the network's
 weights are dotted with the input, yielding approximately 
-\[
+\begin{equation*}
 \mathbf{W}^{\intercal }(\mathbf{X+\eta )=W}^{\intercal }\mathbf{X+W}%
 ^{\intercal }\mathbf{\eta ,}
-\]%
+\end{equation*}%
 where the noise term $\mathbf{W}^{\intercal }\mathbf{\eta }$ can grow very
 large if $\mathbf{W}$ is ill-conditioned. This means, in practice, that
 networks reliant on linear activity functions can produce extremely
-different outputs when given only minimally altered inputs. 
+different outputs when given only minimally altered inputs, as shown in
+Figure \ref{example}. 
+\begin{minipage}{1.0\textwidth}
+\FRAME{ftbpF}{6.0597in}{1.7461in}{0pt}{}{}{adversarial_example_nocap.png}{%
+\special{language "Scientific Word";type "GRAPHIC";display
+"USEDEF";valid_file "F";width 6.0597in;height 1.7461in;depth
+0pt;original-width 6.0001in;original-height 3.3771in;cropleft "0";croptop
+"1";cropright "1";cropbottom "0";filename
+'Plots/plots_base/adversarial_example_nocap.png';file-properties "XNPEU";}} 
+\end{minipage}
+
+An adversarial example. The original Imagenette photograph on the left is
+altered by adding the noise shown in the center (which is scaled up to make
+it visible). The resulting image on the right appears identical to the
+original, but is misidentified by the classifier.
 
 \subsection{Attacks}
 
@@ -176,10 +192,10 @@ The FGSM attack \cite{goodfellow2014explaining} takes advantage of this
 weakness in a straightforward manner. The attacker forms the perturbation
 vector $\mathbf{\eta }$ to match the cost function gradient sign for a given
 input, computing 
-\[
+\begin{equation*}
 \mathbf{\eta }=\epsilon _{\ast }\text{sign}(\nabla _{\mathbf{X}}J(\mathbf{%
 \theta },\mathbf{X},y))
-\]%
+\end{equation*}%
 where $\epsilon _{\ast }$ is the allowable level of perturbation, $J$ is the
 network cost funtion, $\mathbf{\theta }$ is the vector of model parameters,
 and $y$ is the true label. Thus, if the attacker is in posession of the
@@ -221,41 +237,96 @@ _{\ast },\epsilon _{\ast })
 begining with the zero vector $\mathbf{\delta }_{0}=\mathbf{0}$. The result
 of this attack is that the classifier will incorrectly favor the chosen
 label $y_{desired}$ in adversarial inputs, despite remaining perfectly
-capable of correctly classifying unaltered inputs. 
+capable of correctly classifying unaltered inputs.
 
 \subsection{Defences}
 
 A theme that has emerged in the literature is that there is a strong
-correlation between generally robust networks and networks that are not
-easily swayed by adversarial attacks. Of course, one also expects a cost in
-effort or accuracy to be associated with increased robustness. 
+correlation between generally robust networks/inferencing and
+networks/inferencing methods that are not easily swayed by adversarial
+attacks. Of course, one also expects a cost in effort or accuracy to be
+associated with increased robustness.
 
-Our first defence we test is simply Perturbed Prediction Averaging. This
-defence has the advantage that it does not require retraining the network,
-and the only increased expense is the cost of slower decisions at inference
-time. We predict the class for each image based on an ensemble prediction
-for the original image and $N-1$ additional perturbed versions of the image,
-with the perturbations drawn uniformly from the $\epsilon _{\max }$-ball in
-the $l_{\infty }$ sense around the image, choosing $\epsilon _{\max }$ to be
-larger than any expected adversarial alteration level $\epsilon _{\ast }$.
-For example, $\epsilon _{\max }$ can be set large enough that a uniform
-random $\left\vert \left\vert \mathbf{\delta }\right\vert \right\vert
-_{\infty }\leq $ $\epsilon _{\max }$ perturbation would be easily noticed by
-a human. In that case, we can assume that adversarial attacks will rely on $%
-\epsilon _{\ast }<<\epsilon _{\max }$. Using a modified softmax function, we
-can express the probability for class $k$ of classes $\{1,2,...,K\}$
-predicted using this defense as%
-\[
-P(y_{k}\rvert \mathbf{X})=\frac{\sum_{i=1}^{N}e^{z_{k}}(\mathbf{X}+\mathbf{%
-\delta }_{i}\mathbf{)}}{\sum_{j=1}^{K}\sum_{i=1}^{N}e^{z_{j}}(\mathbf{X}+%
-\mathbf{\delta }_{i}\mathbf{)}},
-\]%
-where $z_{j}(\cdot )$ is the output of the $j$th hidden node for a given
-network input $\mathbf{X}$ and with $\mathbf{\delta }_{i}=\mathbf{0}$, and $%
-\left\vert \left\vert \mathbf{\delta }\right\vert \right\vert _{\infty }\leq
-\epsilon _{\max }$ for all $i$.
+Our first defence we test is simply Perturbed Prediction Averaging. The
+simple aim of this method is to "wash out" any adversarial perturbations by
+averaging over many noisy predictions. This defence has the advantage that
+it does not require retraining the network, and the only increased expense
+is the cost of slower decisions at inference time. We predict the class for
+each image based on an ensemble prediction for the original image and $N-1$
+additional perturbed versions of the image, with the perturbations drawn
+uniformly from the $\epsilon _{\max }$-ball in the $l_{\infty }$ sense
+around the image, choosing $\epsilon _{\max }$ to be larger than any
+expected adversarial alteration level $\epsilon _{\ast }$. For example, $%
+\epsilon _{\max }$ can be set large enough that a uniform random $\left\vert
+\left\vert \mathbf{\delta }\right\vert \right\vert _{\infty }\leq $ $%
+\epsilon _{\max }$ perturbation would be easily noticed by a human. In that
+case, we can assume that adversarial attacks will rely on $\epsilon _{\ast
+}<<\epsilon _{\max }$. Using a modified softmax function, we can express the
+probability for class $k$ of classes $\{1,2,...,K\}$ predicted using this
+defense as%
+\begin{equation*}
+P(y_{k}\rvert \mathbf{X})=\frac{\sum_{i=1}^{N}e^{z_{k}(\mathbf{X}+\mathbf{%
+\delta }_{i}\mathbf{)}}}{\sum_{j=1}^{K}\sum_{i=1}^{N}e^{z_{j}(\mathbf{X}+%
+\mathbf{\delta }_{i}\mathbf{)}}},
+\end{equation*}%
+where $z_{j}(\mathbf{X}+\mathbf{\delta }_{i}\mathbf{)}$ is the output of the 
+$j$th hidden node for a given network input $\mathbf{X}$ and with $\mathbf{%
+\delta }_{i}=\mathbf{0}$, and $\left\vert \left\vert \mathbf{\delta }%
+\right\vert \right\vert _{\infty }\leq \epsilon _{\max }$ for all $i$.
+
+In practice we found that a choice of $\epsilon _{\max }=0.3($pixel range$)$
+gave us perturbation that is easily noticeable. Of course, setting $\epsilon
+_{\max }$ too high can lead to inaccurate classification results, since the
+network was not trained on such noisy data; we must ballance the extent of
+our defense with our practical needs.
+
+On the other hand, there are many defensive measures that can be applied
+directly to the neural network during training to allow faster inferencing
+that is still adversarially robust. One method we explored is Adversarial
+Training, where we generate adversarial examples that are added to the
+training data for the network, either during the original training or during
+a retraining step. Using FGSM examples is computationally efficient and
+provides significant security improvements.
 
 \section{Computational results}
+
+\subsection{Resources}
+
+Our computations were made using Jupyter Notebooks in Google Colaboratory
+with their free GPU and TPU\ process time. All code and data interfaces are
+available at the github address given above, in a manner optimized for
+reproducibility.
+
+\subsection{Imagenette data}
+
+To keep our experiments within the scope of our resources, we used a subset
+of the ImageNet dataset \cite{imagenet_cvpr09} called Imagenette\footnote{%
+In keeping with the wishes of the dataset curators, we ask that you
+internally read "Imagenette"\ with "a corny inauthentic French accent"
+unless you are in fact a native French speaker, in which case you are asked
+to render it in a similarly ridiculous American accent.} \cite{imagenette}
+which includes only 10 out of the original 20k classes. These classes%
+\footnote{%
+The classes are as follows:\ \{tench (a fish), English terrier, cassette
+player, chain saw, church, French horn, garbage truck, gas pump, golf ball,
+parachute\}.} are selected to be as distinct as possible, with the intention
+of allowing classifiers to reach high degrees of accuracy without extensive
+training for more agile experimentation.
+
+\subsection{Neural architectures}
+
+After testing our attack strategy with smaller convolutional networks, we
+performed the work for this paper by attacking and defending two standard
+models used for image classification tasks, Wide ResNet and GoogLeNet. We
+took advantage of pretrained PyTorch implementations of these models and
+simply restricted the output to the ten classes of interest. While the
+details of these architectures are outside the scope of this review, they
+can be found in \cite{zagoruyko2016wide} and \cite{szegedy2015going}.
+
+We retrained these networks with the output node layer corrected, using 5
+epocs of stochastic gradient descent with a learning rate of 0.01 and
+momentum value of 0.9. This base version of Wide ResNet achieved 99\%
+accuracy on a test set of images, while GoogLeNet achieved 90\% accuracy.
 
 \subsection{Creating Adversarial Examples}
 
