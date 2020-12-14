@@ -1,3 +1,5 @@
+%\graphicspath{{./Plots/}}
+
 
 \documentclass[conference]{IEEEtran}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -13,11 +15,12 @@
 %TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
 %TCIDATA{BibliographyScheme=BibTeX}
 %TCIDATA{Created=Wednesday, December 09, 2020 21:10:24}
-%TCIDATA{LastRevised=Monday, December 14, 2020 12:05:25}
-%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{LastRevised=Monday, December 14, 2020 14:56:08}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="0">}
 %TCIDATA{<META NAME="DocumentShell" CONTENT="Articles\SW\IEEE Transactions for Conferences">}
 %TCIDATA{CSTFile=IEEEtran.cst}
 
+\graphicspath{{c:/Users/lin11/OneDrive/Documents/JHU-DESKTOP-MR0GT8B/adversarial_examples/}}
 \newtheorem{theorem}{Theorem}
 \newtheorem{acknowledgement}[theorem]{Acknowledgement}
 \newtheorem{algorithm}[theorem]{Algorithm}
@@ -171,16 +174,15 @@ where the noise term $\mathbf{W}^{\intercal }\mathbf{\eta }$ can grow very
 large if $\mathbf{W}$ is ill-conditioned. This means, in practice, that
 networks reliant on linear activity functions can produce extremely
 different outputs when given only minimally altered inputs, as shown in
-Figure \ref{example}. 
-\begin{minipage}{1.0\textwidth}
-\FRAME{ftbpF}{6.0597in}{1.7461in}{0pt}{}{}{adversarial_example_nocap.png}{%
-\special{language "Scientific Word";type "GRAPHIC";display
-"USEDEF";valid_file "F";width 6.0597in;height 1.7461in;depth
-0pt;original-width 6.0001in;original-height 3.3771in;cropleft "0";croptop
-"1";cropright "1";cropbottom "0";filename
-'Plots/plots_base/adversarial_example_nocap.png';file-properties "XNPEU";}} 
-\end{minipage}
-
+Figure \ref{example}.
+\begin{figure*}[h]
+\centering\includegraphics{{Plots/plots_base/adversarial_example_nocap.jpg}}
+\caption{An adversarial example. The original Imagenette photograph on the
+left is altered by adding the noise shown in the center (which is scaled up
+to make it visible). The resulting image on the right appears identical to
+the original, but is misidentified by the classifier.}
+\label{example}
+\end{figure*}
 An adversarial example. The original Imagenette photograph on the left is
 altered by adding the noise shown in the center (which is scaled up to make
 it visible). The resulting image on the right appears identical to the
