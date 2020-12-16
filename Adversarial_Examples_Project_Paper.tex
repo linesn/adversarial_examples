@@ -15,7 +15,7 @@
 %TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
 %TCIDATA{BibliographyScheme=BibTeX}
 %TCIDATA{Created=Wednesday, December 09, 2020 21:10:24}
-%TCIDATA{LastRevised=Monday, December 14, 2020 17:35:46}
+%TCIDATA{LastRevised=Tuesday, December 15, 2020 21:43:29}
 %TCIDATA{<META NAME="GraphicsSave" CONTENT="0">}
 %TCIDATA{<META NAME="DocumentShell" CONTENT="Articles\SW\IEEE Transactions for Conferences">}
 %TCIDATA{Language=American English}
@@ -94,13 +94,13 @@ As automated decision-making becomes more popular and more dependent upon
 artificial intelligence, securing sensitive models from adversarial behavior
 has become essential. Neural networks are particularly vulnerable to
 so-called adversarial examples \cite{szegedy2014intriguing}, and various
-attacks and defences have been explored in the literature.
+attacks and defenses have been explored in the literature.
 
 Our intention in this paper is to demonstrate and confirm the results of
 such attacks at an informative but modest scale. We apply two common attacks
-to both the wide ResNet and GoogLeNet neural models, and test two defences,
+to both the Wide ResNet and GoogLeNet neural models, and test two defenses,
 in a reproducible computational environment. We show that significant
-improvements in network robustness are available with minimal defence
+improvements in network robustness are available with minimal defense
 measures.
 
 The authors are listed alphabetically, and all made equal contributions.
@@ -130,26 +130,27 @@ first observation on the subject, adversarial examples have gained much
 attention in both the study of adversarial machine learning research and the
 more results-oriented world of practical neural architecture, due to the
 alarming weaknesses they expose and the interesting robustness that can be
-introduced via defence efforts. The term "adversarial example" is used to
-describe "an input to a machine learning model that is intentionally
-designed to cause the model to make a mistake in its predictions, despite
-resembling a valid input to a human" \cite{wiyatno2019adversarial}. As such
-these examples are classed as evasion techniques by adversarial machine
-learning theory, since their goal is to evade detection while producing
+introduced via defense efforts. The term \textquotedblleft adversarial
+example\textquotedblright\ is used to describe \textquotedblleft an input to
+a machine learning model that is intentionally designed to cause the model
+to make a mistake in its predictions, despite resembling a valid input to a
+human\textquotedblright\ \cite{wiyatno2019adversarial}. As such these
+examples are classed as evasion techniques by adversarial machine learning
+theory, since their goal is to evade detection while producing
 misinterpretations \cite{wiki:aml}.
 
 Most of the literature on the subject (in keeping with traditions in the
 neural network community) uses image recognition tasks to demonstrate the
-efficacy of attacks and defences, and we will do the same. In this paper we
+efficacy of attacks and defenses, and we will do the same. In this paper we
 will demonstrate successful us of the Fast Gradient Sign Method (FGSM) \cite%
 {goodfellow2014explaining} and Directed Gradient Sign (DGSM) \cite%
 {madry2020adversarial} attacks against convolutional neural networks trained
 with Imagenette data. We will then examine the results of applying two
-common defences: first, perturbed prediction averaging, and second, training
+common defenses: first, perturbed prediction averaging, and second, training
 using adversarial examples. We confirm the observations of Goodfellow et al 
 \cite{goodfellow2014explaining} and show that, while the Wide ResNet and
 GoogLeNet architectures are very susceptible to the above attacks, the named
-defences also produce significant improvement to the robustness of the
+defenses also produce significant improvement to the robustness of the
 classifiers.
 
 \section{Project overview}
@@ -243,7 +244,7 @@ of this attack is that the classifier will incorrectly favor the chosen
 label $y_{desired}$ in adversarial inputs, despite remaining perfectly
 capable of correctly classifying unaltered inputs.
 
-\subsection{Defences}
+\subsection{Defenses}
 
 A theme that has emerged in the literature is that there is a strong
 correlation between generally robust networks/inferencing and
@@ -251,23 +252,24 @@ networks/inferencing methods that are not easily swayed by adversarial
 attacks. Of course, one also expects a cost in effort or accuracy to be
 associated with increased robustness.
 
-Our first defence we test is simply Perturbed Prediction Averaging. The
-simple aim of this method is to "wash out" any adversarial perturbations by
-averaging over many noisy predictions. This defence has the advantage that
-it does not require retraining the network, and the only increased expense
-is the cost of slower decisions at inference time. We predict the class for
-each image based on an ensemble prediction for the original image and $N-1$
-additional perturbed versions of the image, with the perturbations drawn
-uniformly from the $\epsilon _{\max }$-ball in the $l_{\infty }$ sense
-around the image, choosing $\epsilon _{\max }$ to be larger than any
-expected adversarial alteration level $\epsilon _{\ast }$. For example, $%
-\epsilon _{\max }$ can be set large enough that a uniform random $\left\vert
-\left\vert \mathbf{\delta }\right\vert \right\vert _{\infty }\leq $ $%
-\epsilon _{\max }$ perturbation would be easily noticed by a human (as shown
-in Figure \ref{avg}). In that case, we can assume that adversarial attacks
-will rely on $\epsilon _{\ast }<<\epsilon _{\max }$. Using a modified
-softmax function, we can express the probability for class $k$ of classes $%
-\{1,2,...,K\}$ predicted using this defense as%
+Our first defense we test is simply Perturbed Prediction Averaging. The
+simple aim of this method is to \textquotedblleft wash
+out\textquotedblright\ any adversarial perturbations by averaging over many
+noisy predictions. This defense has the advantage that it does not require
+retraining the network, and the only increased expense is the cost of slower
+decisions at inference time. We predict the class for each image based on an
+ensemble prediction for the original image and $N-1$ additional perturbed
+versions of the image, with the perturbations drawn uniformly from the $%
+\epsilon _{\max }$-ball in the $l_{\infty }$ sense around the image,
+choosing $\epsilon _{\max }$ to be larger than any expected adversarial
+alteration level $\epsilon _{\ast }$. For example, $\epsilon _{\max }$ can
+be set large enough that a uniform random $\left\vert \left\vert \mathbf{%
+\delta }\right\vert \right\vert _{\infty }\leq $ $\epsilon _{\max }$
+perturbation would be easily noticed by a human (as shown in Figure \ref{avg}%
+). In that case, we can assume that adversarial attacks will rely on $%
+\epsilon _{\ast }<<\epsilon _{\max }$. Using a modified softmax function, we
+can express the probability for class $k$ of classes $\{1,2,...,K\}$
+predicted using this defense as%
 \begin{equation*}
 P(y_{k}\rvert \mathbf{X})=\frac{\sum_{i=1}^{N}e^{z_{k}(\mathbf{X}+\mathbf{%
 \delta }_{i}\mathbf{)}}}{\sum_{j=1}^{K}\sum_{i=1}^{N}e^{z_{j}(\mathbf{X}+%
@@ -318,7 +320,8 @@ reproducibility.
 To keep our experiments within the scope of our resources, we used a subset
 of the ImageNet dataset \cite{imagenet_cvpr09} called Imagenette\footnote{%
 In keeping with the wishes of the dataset curators, we ask that you
-internally read "Imagenette"\ with "a corny inauthentic French accent"
+internally read \textquotedblleft Imagenette\textquotedblright\ with
+\textquotedblleft a corny inauthentic French accent\textquotedblright\
 unless you are in fact a native French speaker, in which case you are asked
 to render it in a similarly ridiculous American accent.} \cite{imagenette}
 which includes only 10 out of the original 20k classes. These classes%
@@ -344,7 +347,7 @@ epochs of stochastic gradient descent with a learning rate of 0.01 and
 momentum value of 0.9. This base version of Wide ResNet and GoogLeNet both
 achieved 99.9\% accuracy on a test set of images. Because the results we
 will show in this report are so similar for both networks, we will only show
-figures related to the Wide ResNet attacks and defences, but similar figures
+figures related to the Wide ResNet attacks and defenses, but similar figures
 for the GoogLeNet classifier and other relevant details are available in
 project GitHub referenced above.
 
@@ -358,7 +361,7 @@ _{\ast }=0.025\epsilon $, or 2.5\% of the color range, and dropped as low as
 GoogLeNet suffered worse, dropping about 73\% accuracy with an attack on the
 order of $\epsilon _{\ast }=0.025\epsilon ,$ and reaching only 20\% accuracy
 with $\epsilon _{\ast }=0.3\epsilon .$ These results for Wide ResNet are
-shown in Figures \ref{fgsmres} and \ref{failures}.  \bigskip 
+shown in Figures \ref{fgsmres} and \ref{failures}. \bigskip
 
 \begin{figure*}[h]
 \centering%
@@ -395,12 +398,12 @@ small values of $\protect\epsilon _{\ast }$.}
 
 \subsection{Defenses}
 
-For both networks we applied the Perturbed Prediction Averaging defence and
+For both networks we applied the Perturbed Prediction Averaging defense and
 then attacked the network to see how much more robust the averaging rendered
-the classifier. We found that this defence eliminated the sudden success of
+the classifier. We found that this defense eliminated the sudden success of
 very small $\epsilon _{\ast }$-sized FGSM attacks, but still allowed the
 misclassification rate to grow roughly linearly with the allowed size of $%
-\epsilon _{\ast }$ (see Figure \ref{ppa}).  
+\epsilon _{\ast }$ (see Figure \ref{ppa}).
 
 \begin{figure*}[h]
 \centering%
@@ -411,7 +414,7 @@ Wide ResNet secured with Perturbed Prediction Averaging.}
 \end{figure*}
 This defense proved particularly effective against the DGSM\ attack,
 allowing no more than 2\% misclassification due to the attack on either
-classifier. 
+classifier.
 
 We then repeated these tests using 10 epochs of adversarial (re)training as
 our defense instead. This process reduced the overall accuracy of the Wide
@@ -441,7 +444,24 @@ performed well as an inference correction defense that would force the
 adversary to use more visible perturbations to prompt similar
 misclassifications with FGSM\ examples, and drastically limited DGSM\
 success. Adversarial training also reduced the effect of these attacks, but
-comparatively was more effective against the DGSM examples. 
+comparatively was more effective against the DGSM examples. Observing the
+perturbation pattern produced by a DGSM attack (as shown in Figure \ref%
+{pattern}), we noticed that it appears that the perturbation preserves
+features of the image that are likely helpful for its correct
+classification, at least for low enough values of $\epsilon _{\ast }$. We
+speculate that this may occur because adversarial training leads to a
+parameterization of the network in a region of the loss landscape that is
+\textquotedblleft flatter\textquotedblright ---that is, a set of weights may
+be reached by which the features extracted by deeper layers of the network
+do not change very much for small changes in the input image. This idea
+might be worth exploring further.
+
+\begin{figure*}[h]
+\centering\includegraphics{{Plots/pattern_example.jpg}}
+\caption{An example DGSM perturbation pattern. The $\protect\epsilon _{\ast
+}=0.2\protect\epsilon $ attack captures important image features.}
+\label{pattern}
+\end{figure*}
 
 There are many obvious next steps in this research that may be worth
 pursuing. We did not attempt to apply both defenses at once, and it would be
